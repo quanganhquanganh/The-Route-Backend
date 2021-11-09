@@ -1,10 +1,10 @@
-## Backend Docker for The Router Project
+# Backend Docker for The Router Project
 
 Docker clean Laravel 8 installation with PostgreSQL, Redis and nginx
 
-## Cài đặt
+# Cài đặt
 
-# WSL2
+## WSL2
 
 1. Tải về gói update Linux kernel qua link https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
 
@@ -16,11 +16,11 @@ Docker clean Laravel 8 installation with PostgreSQL, Redis and nginx
 
 Nếu bạn dùng WSL 2 làm backend thì không cần lo việc thay đổi Settings của Docker Desktop như tài nguyên máy cần sử dụng hay mount đường dẫn trong/ngoài container bởi mọi thứ đã được config sẵn rồi.
 
-# Docker 
+## Docker 
 
 Trên Windows, cài Docker Desktop Installer theo link này: https://www.docker.com/products/docker-desktop.
 
-# Setup môi trường cho backend
+## Setup môi trường cho backend
 
 1. Chạy lệnh sau: `git clone https://github.com/quanganhquanganh/The-Route-Backend.git`
 
