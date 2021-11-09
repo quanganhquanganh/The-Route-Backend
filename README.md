@@ -47,5 +47,3 @@ Trên Windows, cài Docker Desktop Installer theo link này: https://www.docker.
 
 5. Quay lại Connection và thử link ip lấy được cho vào Host name/address, Password để postgres và các thông tin còn lại điền như dưới:
 ![image](https://user-images.githubusercontent.com/59202082/140952470-5e6f0a0e-4ab6-4294-94a0-0a377b1c8a94.png)
-
-5. 
