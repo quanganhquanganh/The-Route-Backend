@@ -26,7 +26,7 @@ Trên Windows, cài Docker Desktop Installer theo link này: https://www.docker.
 
 2. `cd The-Route-Backend`
 
-3. Setup file .env ( `cd src` sau đó `cp .env.example .env`) 
+3. Setup file .env ( `cd src` sau đó `cp .env.example .env` xong rồi `cd ..`) 
 
 3. `docker-compose up -d --build`
 
