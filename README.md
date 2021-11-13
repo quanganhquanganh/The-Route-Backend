@@ -26,11 +26,15 @@ Trên Windows, cài Docker Desktop Installer theo link này: https://www.docker.
 
 2. `cd The-Route-Backend`
 
+3. Setup file .env ( `cd src` sau đó `cp .env.example .env` xong rồi `cd ..`) 
+
 3. `docker-compose up -d --build`
 
 4. `docker-compose run --rm composer install`
 
-5. `docker-compose run --rm artisan migrate`  
+5. `docker-compose run --rm artisan migrate` 
+
+6. Vào localhost:8080 để check đã được chưa.
 
 ## Kết nối với pgAdmin4
 
@@ -51,3 +55,5 @@ Trên Windows, cài Docker Desktop Installer theo link này: https://www.docker.
 5. Quay lại Connection và thử link ip lấy được cho vào Host name/address, Password để postgres và các thông tin còn lại điền như dưới:
 
 ![image](https://user-images.githubusercontent.com/59202082/140952470-5e6f0a0e-4ab6-4294-94a0-0a377b1c8a94.png)
+
+# Các vấn đề có thể gặp phải
