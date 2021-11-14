@@ -13,7 +13,7 @@ class CreateRouteTable extends Migration
      */
     public function up()
     {
-        Schema::create('route', function (Blueprint $table) {
+        Schema::create('routes', function (Blueprint $table) {
             $table->id();
             $table->string('nameRoute');
             $table->foreignId('author_id')->constrained('users');

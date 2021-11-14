@@ -13,13 +13,13 @@ class CreateTaskTable extends Migration
      */
     public function up()
     {
-        Schema::create('task', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('content_task');
             $table->date('start_time');
             $table->date('end_time');
             $table->boolean('isDone');
-            $table->foreignId('route_sub_id')->constrained('route_sub');
+            $table->foreignId('route_sub_id')->constrained();
         });
     }
 
