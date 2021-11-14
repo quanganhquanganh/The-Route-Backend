@@ -19,7 +19,7 @@ class CreateTaskTable extends Migration
             $table->date('start_time');
             $table->date('end_time');
             $table->boolean('isDone');
-            $table->foreignId('route_id')->constrained('route_sub');
+            $table->foreignId('route_sub_id')->constrained('route_sub');
         });
     }
 
