@@ -14,12 +14,11 @@ class CreateRouteSubTable extends Migration
     public function up()
     {
         Schema::create('route_sub', function (Blueprint $table) {
-            $table->id('route_sub_id');
+            $table->id();
             $table->string('name_route_sub');
-            $table->integer('route_id');
             $table->date('start_time');
             $table->date('end_time');
-            $table->foreign('route_id')->references('route_id')->on('route');
+            $table->foreignId('route_id')->constrained('route');
         });
     }
 
