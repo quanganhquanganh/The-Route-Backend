@@ -15,12 +15,15 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');//Tên đăng nhập
-            $table->string('userName');//Tên của users
+            $table->string('userName')->unique()->nullable();//Tên đăng nhập
+            $table->string('email')->unique();
+            $table->string('name')->nullable();//Tên của users
             $table->string('password');
-            $table->date('DateOfBirth');
-            $table->string('current job');
-            $table->boolean('isAdmin');
+            $table->date('DateOfBirth')->nullable();
+            $table->string('current job')->nullable();
+            $table->boolean('isAdmin')->nullable();
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
 
