@@ -12,7 +12,7 @@ class TimelineController extends Controller
         //$user = User::find($id);
         //$timeline = $user->timeline()->get();
         //return response()->json($timeline);
-        return response()->json([
+        $timeline = [
             "id" => 1,
             "name"=> "JLPT",
             "tasks"=> [
@@ -78,6 +78,10 @@ class TimelineController extends Controller
                     ]
                 ]
             ]
+        ];
+        return response()->json([
+            "status" => 200,
+            "timeline" => $timeline
         ]);
     }
 }
