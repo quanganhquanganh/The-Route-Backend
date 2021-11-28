@@ -6,15 +6,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Roadmap;
 
-class RoadmapController extends Controller
+class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
+        $roadmap = Roadmap::find($id);
+        $tasks = $roadmap->tasks()->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $tasks
+        ]);
         //
     }
 
@@ -37,23 +43,6 @@ class RoadmapController extends Controller
     public function store(Request $request)
     {
         //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-        $roadmap = Roadmap::find($id);
-
-        return response()->json([
-            'status' => 'success',
-            'roadmap'=> $roadmap,
-        ]);
     }
 
     /**

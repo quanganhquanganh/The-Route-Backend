@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTaskTable extends Migration
+class CreateRoadmapsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateTaskTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('roadmaps', function (Blueprint $table) {
             $table->id();
-            $table->string('content_task');
-            $table->date('start_time');
-            $table->date('end_time');
-            $table->boolean('isDone');
-            $table->foreignId('route_sub_id')->constrained();
+            $table->string('slug')->unique();
+            $table->string('name');
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
         });
     }
 
@@ -30,6 +29,6 @@ class CreateTaskTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('roadmaps');
     }
 }

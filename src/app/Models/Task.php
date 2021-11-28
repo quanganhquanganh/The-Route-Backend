@@ -5,23 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Roadmap extends Model
+class Task extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
+        'start_date',
+        'roadmap_id',
         'user_id',
     ];
 
-    public function users()
+    public function roadmap()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Roadmap::class, 'roadmap_id');
     }
 
-    public function tasks()
+    public function user()
     {
-        return $this->hasMany(Task::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function todos()

@@ -41,4 +41,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the roadmaps for the user.
+     */
+    public function roadmaps()
+    {
+        return $this->hasMany(Roadmap::class);
+    }
+    
+    /**
+     * Get the tasks for the user.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the todos for the user.
+     */
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
 }

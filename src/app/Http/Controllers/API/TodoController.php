@@ -4,17 +4,24 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Roadmap;
+use App\Models\Task;
 
-class RoadmapController extends Controller
+class TodoController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
+        $task = Task::find($id);
+        $todos = $task->todos()->get(); 
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $todos
+        ]);
         //
     }
 
@@ -37,23 +44,6 @@ class RoadmapController extends Controller
     public function store(Request $request)
     {
         //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-        $roadmap = Roadmap::find($id);
-
-        return response()->json([
-            'status' => 'success',
-            'roadmap'=> $roadmap,
-        ]);
     }
 
     /**

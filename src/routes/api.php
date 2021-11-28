@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TimelineController;
+use App\Http\Controllers\Api\RoadmapController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TodoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,4 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/timeline/{id}', [TimelineController::class, 'show']);
+Route::get('/show-roadmap/{id}', [RoadmapController::class, 'show']);
+Route::get('/get-tasks/{id}', [TaskController::class, 'index']);
+Route::get('/get-todos/{id}', [TodoController::class, 'index']);

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RoadmapFactory extends Factory
@@ -15,6 +16,9 @@ class RoadmapFactory extends Factory
     {
         return [
             //
+            'user_id' => User::factory(),
+            'name' => $this->faker->sentence(3),
+            'slug' => $this->faker->slug(),
         ];
     }
 }
