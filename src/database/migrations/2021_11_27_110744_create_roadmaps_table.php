@@ -15,8 +15,9 @@ class CreateRoadmapsTable extends Migration
     {
         Schema::create('roadmaps', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->string('name');
+            $table->string('slug');
+            $table->string('description');
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
