@@ -18,9 +18,9 @@ class CreateUsersTable extends Migration
             $table->string('name');//Tên đăng nhập
             $table->string('username');//Tên của users
             $table->string('password');
-            $table->date('DateOfBirth');
+            $table->date('birth_date');
             $table->string('current_job');
-            $table->boolean('isAdmin');
+            $table->boolean('is_admin')->nullable();
             $table->timestamps();
         });
     }

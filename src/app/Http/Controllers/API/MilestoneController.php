@@ -6,8 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Roadmap;
 
-class TaskController extends Controller
+class MilestoneController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     /**
      * Display a listing of the resource.
      *
@@ -15,12 +20,11 @@ class TaskController extends Controller
      */
     public function index($id)
     {
-        $user = User::find($id);
-        $tasks = $user->tasks()->get(); 
-
+        $roadmap = Roadmap::find($id);
+        $milestones = $roadmap->milestones()->get();
         return response()->json([
             'status' => 'success',
-            'tasks' => $tasks
+            'milestones' => $milestones
         ]);
         //
     }
@@ -42,6 +46,17 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
     {
         //
     }

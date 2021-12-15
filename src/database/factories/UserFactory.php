@@ -19,9 +19,9 @@ class UserFactory extends Factory
             'username' => $this->faker->userName(),
             //'email' => $this->faker->unique()->safeEmail(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'DateOfBirth' => $this->faker->dateTimeBetween('-60 years', '-18 years'),
+            'birth_date' => $this->faker->dateTimeBetween('-60 years', '-18 years'),
             'current_job' => $this->faker->sentence(3),
-            'isAdmin' => $this->faker->boolean(),
+            'is_admin' => $this->faker->boolean(),
             //'remember_token' => Str::random(10),
         ];
     }

@@ -18,6 +18,7 @@ class RoadmapFactory extends Factory
             //
             'user_id' => User::factory(),
             'name' => $this->faker->sentence(3),
+            'description' => $this->faker->sentence(10),
             'slug' => $this->faker->slug(),
         ];
     }

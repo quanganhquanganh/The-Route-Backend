@@ -53,16 +53,16 @@ class User extends Authenticatable
     /**
      * Get the tasks for the user.
      */
-    public function tasks()
+    public function milestones()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Milestone::class);
     }
 
     /**
      * Get the todos for the user.
      */
-    public function todos()
+    public function tasks()
     {
-        return $this->hasMany(Todo::class);
+        return $this->hasMany(Task::class);
     }
 }

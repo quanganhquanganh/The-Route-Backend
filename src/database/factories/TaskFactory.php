@@ -16,10 +16,13 @@ class TaskFactory extends Factory
     {
         return [
             //
-            'roadmap_id' => $this->faker->numberBetween(1, 10),
+            'content' => $this->faker->sentence,
+            'start_date' => $this->faker->dateTimeBetween('-1 years', '+1 years'),
+            'end_date' => $this->faker->dateTimeBetween('-1 years', '+1 years'),
+            'milestone_id' => $this->faker->numberBetween(1, 10),
+            'roadmap_id' => 1,
             'user_id' => 1,
-            'name' => $this->faker->sentence,
-            'start_date' => $this->faker->dateTimeBetween('-2 year', '+2 year'),
+            'completed' => $this->faker->boolean,
         ];
     }
 }

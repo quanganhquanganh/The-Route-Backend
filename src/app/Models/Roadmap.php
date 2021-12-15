@@ -19,13 +19,13 @@ class Roadmap extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function milestones()
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
     public function tasks()
     {
         return $this->hasMany(Task::class);
-    }
-
-    public function todos()
-    {
-        return $this->hasMany(Todo::class);
     }
 }

@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Roadmap;
 use App\Models\User;
+use App\Models\Milestone;
 use App\Models\Task;
-use App\Models\Todo;
 use Illuminate\Database\Seeder;
 use DateInterval;
 use DateTime;
@@ -39,15 +39,18 @@ class DatabaseSeeder extends Seeder
         Roadmap::factory(10)->create();
 
         for ($i = 0; $i < 10; $i++) {
-            $task = Task::factory()->create([
+            $random_start = $this->randomDate(new DateTime('-2 years'), new DateInterval('P2Y'));
+            $milestone = Milestone::factory()->create([
                 'roadmap_id' => $i + 1,
                 'user_id' => $i + 1,
+                'start_date' => $random_start,
+                'end_date' => (clone $random_start)->add(new DateInterval('P1M')),
             ]);
 
             for ($k = 0; $k < 3; $k++) {
-                $random = $this->randomDate($task->start_date, new DateInterval('P25D'));
-                Todo::factory()->create([
-                    'task_id' => $task->id,
+                $random = $this->randomDate($milestone->start_date, new DateInterval('P25D'));
+                Task::factory()->create([
+                    'milestone_id' => $milestone->id,
                     'roadmap_id' => $i + 1,
                     'user_id' => $i + 1,
                     'start_date' => $random,
@@ -56,16 +59,17 @@ class DatabaseSeeder extends Seeder
             }
 
             for ($j = 1; $j < 12; $j++) {
-                $task = Task::factory()->create([
+                $milestone = Milestone::factory()->create([
                     'roadmap_id' => $i + 1,
                     'user_id' => $i + 1,
-                    'start_date' => $task->start_date->add(new DateInterval('P1M')),
+                    'start_date' => $milestone->end_date,
+                    'end_date' => (clone $milestone->end_date)->add(new DateInterval('P1M')),
                 ]);
 
                 for ($k = 0; $k < 3; $k++) {
-                    $random = $this->randomDate($task->start_date, new DateInterval('P25D'));
-                    Todo::factory()->create([
-                        'task_id' => $task->id,
+                    $random = $this->randomDate($milestone->start_date, new DateInterval('P25D'));
+                    Task::factory()->create([
+                        'milestone_id' => $milestone->id,
                         'roadmap_id' => $i + 1,
                         'user_id' => $i + 1,
                         'start_date' => $random,

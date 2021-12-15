@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRouteSubTable extends Migration
+class CreateMilestonesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ class CreateRouteSubTable extends Migration
      */
     public function up()
     {
-        Schema::create('route_subs', function (Blueprint $table) {
+        Schema::create('milestones', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->date('start_time');
-            $table->date('end_time');
-            $table->foreignId('route_id')->constrained();
+            $table->text('description');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->foreignId('roadmap_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
         });
     }
 
@@ -29,6 +32,6 @@ class CreateRouteSubTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('route_subs');
+        Schema::dropIfExists('milestones');
     }
 }
