@@ -78,7 +78,10 @@ class RoadmapController extends Controller
         //
         $roadmap = Roadmap::find($id);
         $milestones = Milestone::where('roadmap_id', $id)->get();
-        $tasks = Task::where('roadmap_id', $id)->get();
+        $milestones = $milestones->map(function($milestone) {
+            $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
+            return $milestone;
+        });
 
         if(!$roadmap){
             return response()->json([
@@ -91,8 +94,7 @@ class RoadmapController extends Controller
                 'status' => 'success',
                 'error' => false,
                 'roadmap' => $roadmap,
-                'milestones' => $milestones,
-                'tasks' => $tasks
+                'milestones' => $milestones
             ], 200);
         }
     }
