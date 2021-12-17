@@ -21,6 +21,7 @@ class MilestoneFactory extends Factory
             'description' => $this->faker->sentence,
             'start_date' => $this->faker->dateTimeBetween('-2 year', '+2 year'),
             'end_date' => $this->faker->dateTimeBetween('-2 year', '+2 year'),
+            'type' => 'monthly'
         ];
     }
 }

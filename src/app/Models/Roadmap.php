@@ -12,6 +12,8 @@ class Roadmap extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'description',
+        'slug'
     ];
 
     public function users()

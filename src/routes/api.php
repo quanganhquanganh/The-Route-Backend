@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoadmapController;
+use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\TaskController;
-use App\Http\Controllers\Api\TodoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/show-roadmap/{id}', [RoadmapController::class, 'show']);
-Route::get('/get-tasks/{id}', [TaskController::class, 'index']);
-Route::get('/get-todos/{id}', [TodoController::class, 'index']);
+// Route::get('/show-roadmap/{id}', [RoadmapController::class, 'show']);
+// Route::get('/show-milestone/{id}', [MilestoneController::class, 'show']);
+// Route::get('/show-task/{id}', [TaskController::class, 'show']);
+Route::resource('/roadmaps', RoadmapController::class);
+Route::resource('/milestones', MilestoneController::class);
+Route::resource('/tasks', TaskController::class);

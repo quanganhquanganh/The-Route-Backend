@@ -19,6 +19,7 @@ class CreateMilestonesTable extends Migration
             $table->text('description');
             $table->date('start_date');
             $table->date('end_date');
+            $table->string('type');
             $table->foreignId('roadmap_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
