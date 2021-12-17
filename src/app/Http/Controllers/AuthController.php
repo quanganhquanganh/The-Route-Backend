@@ -8,20 +8,12 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
+
     public function __construct() {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    //login
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
             'name' => 'required|string',
@@ -36,15 +28,10 @@ class AuthController extends Controller
         if (! $token = Auth::attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
         return $this->createNewToken($token);
     }
 
-    /**
-     * Register a User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    //register
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100|unique:users',
@@ -60,77 +47,32 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password)]
                 ));
 
+        $token = Auth::attempt($validator->validated());
+
         return response()->json([
             'message' => 'User successfully registered',
-            'token' => $this->createNewToken(Auth::attempt($validator->validated())),
+            'token' => $this->createNewToken($token),
             'user' => $user,
         ], 201);
     }
 
-
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    //logout
     public function logout() {
-        auth()->logout();
-
+        Auth::logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
 
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    // Refresh a token.
     public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(Auth::refresh());
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function userProfile() {
-        return response()->json(auth()->user());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    //dùng để custom token đi cùng với các trường khác
     protected function createNewToken($token){
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'expires_in' => Auth::factory()->getTTL() * 60,
         ]);
-    }
-
-    public function changePassWord(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'old_password' => 'required|string|min:6',
-            'new_password' => 'required|string|confirmed|min:6',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $userId = auth()->user()->id;
-
-        $user = User::where('id', $userId)->update(
-                    ['password' => bcrypt($request->new_password)]
-                );
-
-        return response()->json([
-            'message' => 'User successfully changed password',
-            'user' => $user,
-        ], 201);
     }
 }
