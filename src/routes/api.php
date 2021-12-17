@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\RoadmapController;
 use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\TaskController;
 
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,9 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::get('/show-roadmap/{id}', [RoadmapController::class, 'show']);
-// Route::get('/show-milestone/{id}', [MilestoneController::class, 'show']);
-// Route::get('/show-task/{id}', [TaskController::class, 'show']);
 Route::resource('/roadmaps', RoadmapController::class);
 Route::resource('/milestones', MilestoneController::class);
 Route::resource('/tasks', TaskController::class);
+Route::group([
+    'middleware' => 'api',
+], function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+});
