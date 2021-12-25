@@ -23,12 +23,16 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        //Hỏi anh Giáp hoặc anh Dũng chỗ này: Auth""attempt được định nghĩa
-        //như thế nào và tại sao nó lại hoạt động được như vậy
+
         if (! $token = Auth::attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->createNewToken($token);
+        $user = $validator->validated();
+        return response()->json([
+            'message' => 'User successfully login',
+            'token' => $this->createNewToken($token),
+            'user' => $user,
+        ], 201);
     }
 
     //register
