@@ -17,7 +17,7 @@ class MilestoneFactory extends Factory
             //
             'roadmap_id' => $this->faker->numberBetween(1, 10),
             'user_id' => 1,
-            'name' => $this->faker->sentence,
+            'name' => $this->faker->words(3, true),
             'description' => $this->faker->sentence,
             'start_date' => $this->faker->dateTimeBetween('-2 year', '+2 year'),
             'end_date' => $this->faker->dateTimeBetween('-2 year', '+2 year'),

@@ -77,7 +77,35 @@ class RoadmapController extends Controller
     {
         //
         $roadmap = Roadmap::find($id);
-        $milestones = Milestone::where('roadmap_id', $id)->get();
+
+        if(!$roadmap){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'Roadmap not found'
+            ], 404);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'error' => false,
+                'roadmap' => $roadmap
+            ], 200);
+        }
+    }
+
+    /**
+     * Display all data about a roadmap.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function full($id)
+    {
+        //
+        $roadmap = Roadmap::find($id);
+        //Get milestones sorted by start date
+        $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
         $milestones = $milestones->map(function($milestone) {
             $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
             return $milestone;
@@ -119,9 +147,10 @@ class RoadmapController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'name' => $request->name,
-                'description' => $request->description,
-                'slug' => $request->slug,
+                'user_id' => 'required|integer|exists:users,id',
+                'name' => 'required|string|max:30|min:3',
+                'description' => 'required|string|max:255',
+                'slug' => 'required|string|max:30|min:3',
             ]);
 
             if($validator->fails()){
@@ -130,6 +159,7 @@ class RoadmapController extends Controller
 
             try {
                 $roadmap->update([
+                    'user_id' => $request->user_id,
                     'name' => $request->name,
                     'description' => $request->description,
                     'slug' => $request->slug,

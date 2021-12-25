@@ -38,8 +38,7 @@ class TaskController extends Controller
             'user_id' => 'required|integer|exists:users,id',
             'content' => 'required|string|max:100|min:3',
             'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
-            'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
-            'completed' => 'required|boolean'
+            'end_date' => 'required|date|date_format:Y-m-d|after:start_date'
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +54,7 @@ class TaskController extends Controller
                 'description' => $request->description,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'completed' => $request->completed
+                'completed' => false
             ]);
 
             return response()->json([
@@ -93,6 +92,9 @@ class TaskController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
+                'roadmap_id' => 'required|integer|exists:roadmaps,id',
+                'milestone_id' => 'required|integer|exists:milestones,id',
+                'user_id' => 'required|integer|exists:users,id',
                 'content' => 'required|string|max:100|min:3',
                 'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
                 'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
@@ -105,6 +107,9 @@ class TaskController extends Controller
             
             try {
                 $task->update([
+                    'roadmap_id' => $request->roadmap_id,
+                    'milestone_id' => $request->milestone_id,
+                    'user_id' => $request->user_id,
                     'content' => $request->content,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,

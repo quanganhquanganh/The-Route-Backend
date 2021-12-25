@@ -19,9 +19,9 @@ class CreateTasksTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('completed');
-            $table->foreignId('milestone_id')->constrained();
-            $table->foreignId('roadmap_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('milestone_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('roadmap_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

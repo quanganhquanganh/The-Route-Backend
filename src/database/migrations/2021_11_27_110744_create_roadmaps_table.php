@@ -18,7 +18,7 @@ class CreateRoadmapsTable extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('description');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

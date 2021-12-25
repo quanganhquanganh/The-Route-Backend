@@ -138,11 +138,12 @@ class MilestoneController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'name' => $request->name,
-                'description' => $request->description,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'type' => $request->type
+                'roadmap_id' => 'required|integer|exists:roadmaps,id',
+                'name' => 'required|string|max:100|min:3',
+                'description' => 'required|string|max:255',
+                'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
+                'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
+                'type' => 'required|string|in:daily,weekly,monthly,yearly',
             ]);
 
             if($validator->fails()){

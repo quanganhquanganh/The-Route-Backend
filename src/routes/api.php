@@ -22,9 +22,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::resource('/roadmaps', RoadmapController::class);
 Route::resource('/milestones', MilestoneController::class);
 Route::resource('/tasks', TaskController::class);
+
+Route::get('/roadmaps/{id}/full', [RoadmapController::class, 'full']);
+
+// Route::get('roadmaps/{roadmap}/milestones', 'MilestoneController@index');
+
+// Route::get('/tasks/{id}/complete', 'TaskController@complete');
+// Route::get('/tasks/{id}/incomplete', 'TaskController@incomplete');
+
 Route::group([
     'middleware' => 'api',
 ], function () {
@@ -32,4 +41,5 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+
 });
