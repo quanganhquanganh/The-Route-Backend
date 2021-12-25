@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTaskTable extends Migration
+class CreateTasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,11 +15,14 @@ class CreateTaskTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('content_task');
-            $table->date('start_time');
-            $table->date('end_time');
-            $table->boolean('isDone');
-            $table->foreignId('route_sub_id')->constrained();
+            $table->string('content');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->boolean('completed');
+            $table->foreignId('milestone_id')->constrained();
+            $table->foreignId('roadmap_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
         });
     }
 
