@@ -4,11 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Roadmap;
-use App\Models\Milestone;
+use App\Models\Task;
 use Exception;
 use Facade\FlareClient\Http\Exception\NotFound;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -17,9 +17,27 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index(User $user)
     {
-        //
+        if($user->id != Auth::user()->id){
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => 'You are not authorized to view this resource',
+                    'data' => null
+                ], 401
+            );
+        }
+        $tasks = $user->tasks;
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'Tasks retrieved successfully',
+                'data' => $tasks
+            ], 200
+        );
     }
 
 
@@ -32,13 +50,13 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         //
+        $user = Auth::user();
         $validator = Validator::make($request->all(), [
-            'roadmap_id' => 'required|integer|exists:roadmaps,id',
-            'milestone_id' => 'required|integer|exists:milestones,id',
-            'user_id' => 'required|integer|exists:users,id',
-            'content' => 'required|string|max:100|min:3',
-            'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
-            'end_date' => 'required|date|date_format:Y-m-d|after:start_date'
+            'roadmap_id' => 'required|integer|exists:roadmaps,id|in:'.$user->roadmaps->pluck('id')->implode(','),
+            'milestone_id' => 'required|integer|exists:milestones,id|in:'.$user->milestones->pluck('id')->implode(','),
+            'content' => 'required|string|max:100|min:1',
+            'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
+            'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date'
         ]);
 
         if ($validator->fails()) {
@@ -49,9 +67,8 @@ class TaskController extends Controller
             $task = Task::create([
                 'roadmap_id' => $request->roadmap_id,
                 'milestone_id' => $request->milestone_id,
-                'user_id' => $request->user_id,
-                'name' => $request->name,
-                'description' => $request->description,
+                'user_id' => $user->id,
+                'content' => $request->content,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'completed' => false
@@ -82,7 +99,8 @@ class TaskController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $task = Task::find($id);
+        $user = Auth::user();
+        $task = $user->tasks->find($id);
 
         if(!$task){
             return response()->json([
@@ -92,12 +110,11 @@ class TaskController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'roadmap_id' => 'required|integer|exists:roadmaps,id',
-                'milestone_id' => 'required|integer|exists:milestones,id',
-                'user_id' => 'required|integer|exists:users,id',
-                'content' => 'required|string|max:100|min:3',
-                'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
-                'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
+                'roadmap_id' => 'required|integer|exists:roadmaps,id|in:'.$user->roadmaps->pluck('id')->implode(','),
+                'milestone_id' => 'required|integer|exists:milestones,id|in:'.$user->milestones->pluck('id')->implode(','),
+                'content' => 'required|string|max:100|min:1',
+                'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
+                'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
                 'completed' => 'required|boolean'
             ]);
 
@@ -109,7 +126,7 @@ class TaskController extends Controller
                 $task->update([
                     'roadmap_id' => $request->roadmap_id,
                     'milestone_id' => $request->milestone_id,
-                    'user_id' => $request->user_id,
+                    'user_id' => $user->id,
                     'content' => $request->content,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
@@ -141,7 +158,8 @@ class TaskController extends Controller
     public function destroy($id)
     {
         //
-        $task = Task::find($id);
+        $user = Auth::user();
+        $task = $user->tasks->find($id);
 
         if(!$task){
             return response()->json([

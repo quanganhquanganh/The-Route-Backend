@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoadmapController;
 use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TestController;
 
 use App\Http\Controllers\AuthController;
 /*
@@ -23,11 +24,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::resource('/roadmaps', RoadmapController::class);
-Route::resource('/milestones', MilestoneController::class);
-Route::resource('/tasks', TaskController::class);
+// Route::resource('/roadmaps', RoadmapController::class);
+// Route::resource('/milestones', MilestoneController::class);
+// Route::resource('/tasks', TaskController::class);
+// Route::get('/tests/{test:slug}', [TestController::class, 'show']);
+// Route::get('/tests', [TestController::class, 'index']);
+// Route::post('/tests', [TestController::class, 'store']);
+// Route::put('/tests/{test:slug}', [TestController::class, 'update']);
 
-Route::get('/roadmaps/{id}/full', [RoadmapController::class, 'full']);
+// Route::get('/roadmaps/{id}/full', [RoadmapController::class, 'full']);
 
 // Route::get('roadmaps/{roadmap}/milestones', 'MilestoneController@index');
 
@@ -41,5 +46,25 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+    
+    //Roadmap Routes
+    Route::get('/users/{user:username}/roadmaps', [RoadmapController::class, 'index']);
+    Route::get('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'show']);
+    Route::get('/roadmaps/{roadmap:slug}/full', [RoadmapController::class, 'full']);
+    Route::post('/roadmaps', [RoadmapController::class, 'store']);
+    Route::put('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'update']);
+    Route::delete('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'destroy']);
 
+
+    //Milestone Routes
+    Route::get('/users/{user:username}/milestones', [MilestoneController::class, 'index']);
+    Route::post('/milestones', [MilestoneController::class, 'store']);
+    Route::put('/milestones/{id}', [MilestoneController::class, 'update']);
+    Route::delete('/milestones/{id}', [MilestoneController::class, 'destroy']);
+
+    //Task Routes
+    Route::get('/users/{user:username}/tasks', [TaskController::class, 'index']);
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::put('/tasks/{id}', [TaskController::class, 'update']);
+    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 });

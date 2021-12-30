@@ -11,7 +11,10 @@ class Milestone extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'start_date',
+        'end_date',
+        'type',
         'roadmap_id',
         'user_id',
     ];

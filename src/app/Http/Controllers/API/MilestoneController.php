@@ -9,6 +9,7 @@ use App\Models\Milestone;
 use Exception;
 use Facade\FlareClient\Http\Exception\NotFound;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class MilestoneController extends Controller
 {
@@ -22,27 +23,17 @@ class MilestoneController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index(User $user)
     {
-        /*
-        $roadmap = Roadmap::find($id);
-
-        if(!$roadmap){
-            return response()->json([
-                'status' => 'error',
-                'error' => true,
-                'message' => 'Roadmap not found'
-            ], 404);
-        } else {
-            $milestones = $roadmap->milestones()->get();
-            return response()->json([
+        $milestones = $user->milestones;
+        return response()->json(
+            [
                 'status' => 'success',
                 'error' => false,
-                'count' => count($milestones),
-                'milestones' => $milestones
-            ], 200);
-        }*/
-        //
+                'message' => 'Milestones retrieved successfully',
+                'data' => $milestones
+            ], 200
+        );
     }
 
     /**
@@ -54,13 +45,14 @@ class MilestoneController extends Controller
     public function store(Request $request)
     {
         //
+        $user = Auth::user();
         $validator = Validator::make($request->all(), [
-            'roadmap_id' => 'required|integer|exists:roadmaps,id',
             'name' => 'required|string|max:100|min:3',
             'description' => 'required|string|max:255',
             'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
             'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
             'type' => 'required|string|in:daily,weekly,monthly,yearly',
+            'roadmap_id' => 'required|exists:roadmaps,id|in:'.$user->roadmaps->pluck('id')->implode(','),
         ]);
 
         if($validator->fails()){
@@ -70,6 +62,7 @@ class MilestoneController extends Controller
         try {
             $milestone = Milestone::create([
                 'roadmap_id' => $request->roadmap_id,
+                'user_id' => $user->id,
                 'name' => $request->name,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
@@ -93,32 +86,6 @@ class MilestoneController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-        $milestone = Milestone::find($id);
-
-        if(!$milestone){
-            return response()->json([
-                'status' => 'error',
-                'error' => true,
-                'message' => 'Milestone not found'
-            ], 404);
-        } else {
-            return response()->json([
-                'status' => 'success',
-                'error' => false,
-                'milestone' => $milestone
-            ], 200);
-        }
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -128,7 +95,9 @@ class MilestoneController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $milestone = Milestone::find($id);
+        $user = Auth::user();
+        
+        $milestone = $user->milestones()->find($id);
 
         if(!$milestone){
             return response()->json([
@@ -138,11 +107,10 @@ class MilestoneController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'roadmap_id' => 'required|integer|exists:roadmaps,id',
-                'name' => 'required|string|max:100|min:3',
+                'name' => 'required|string|max:100|min:1',
                 'description' => 'required|string|max:255',
-                'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
-                'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
+                'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
+                'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
                 'type' => 'required|string|in:daily,weekly,monthly,yearly',
             ]);
 
@@ -184,7 +152,8 @@ class MilestoneController extends Controller
     public function destroy($id)
     {
         //
-        $milestone = Milestone::find($id);
+        $user = Auth::user();
+        $milestone = $user->milestones()->find($id);
         if(!$milestone){
             return response()->json([
                 'status' => 'error',

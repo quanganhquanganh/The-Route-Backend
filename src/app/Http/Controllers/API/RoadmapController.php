@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\Roadmap;
 use App\Models\Milestone;
 use App\Models\Task;
+use App\Models\User;
 use Exception;
 use Facade\FlareClient\Http\Exception\NotFound;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class RoadmapController extends Controller
 {
@@ -18,10 +21,17 @@ class RoadmapController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-        //
-
+        $roadmaps = $user->roadmaps;
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'Roadmaps retrieved successfully',
+                'data' => $roadmaps
+            ], 200
+        );
     }
 
     /**
@@ -36,8 +46,6 @@ class RoadmapController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:30|min:3',
             'description' => 'required|string|max:255',
-            'slug' => 'required|string|max:30|min:3',
-            'user_id' => 'required|integer|exists:users,id',
         ]);
 
         if($validator->fails()){
@@ -48,8 +56,8 @@ class RoadmapController extends Controller
             $roadmap = Roadmap::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'slug' => $request->slug,
-                'user_id' => $request->user_id,
+                'slug' => this->createUniqueSlug($request->name),
+                'user_id' => Auth::user()->id,
             ]);
             
             return response()->json([
@@ -73,24 +81,15 @@ class RoadmapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Roadmap $roadmap)
     {
         //
-        $roadmap = Roadmap::find($id);
-
-        if(!$roadmap){
-            return response()->json([
-                'status' => 'error',
-                'error' => true,
-                'message' => 'Roadmap not found'
-            ], 404);
-        } else {
-            return response()->json([
-                'status' => 'success',
-                'error' => false,
-                'roadmap' => $roadmap
-            ], 200);
-        }
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Roadmap retrieved successfully',
+            'roadmap' => $roadmap
+        ], 200);
     }
 
     /**
@@ -100,31 +99,24 @@ class RoadmapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function full($id)
+    public function full(Roadmap $roadmap)
     {
-        //
-        $roadmap = Roadmap::find($id);
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
-        $milestones = $milestones->map(function($milestone) {
-            $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
-            return $milestone;
-        });
-
-        if(!$roadmap){
-            return response()->json([
-                'status' => 'error',
-                'error' => true,
-                'message' => 'Roadmap not found'
-            ], 404);
-        } else {
-            return response()->json([
-                'status' => 'success',
-                'error' => false,
-                'roadmap' => $roadmap,
-                'milestones' => $milestones
-            ], 200);
+        $user = Auth::user();
+        if($user->id == $roadmap->user_id){
+            $milestones = $milestones->map(function($milestone) {
+                $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
+                return $milestone;
+            });
         }
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Full roadmap retrieved successfully',
+            'roadmap' => $roadmap,
+            'milestones' => $milestones
+        ], 200);
     }
 
     /**
@@ -134,23 +126,21 @@ class RoadmapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Roadmap $roadmap)
     {
         //
-        $roadmap = Roadmap::find($id);
-
-        if(!$roadmap){
+        $user = Auth::user();
+        //Check if roadmap is belong to user
+        if($roadmap->user_id != $user->id){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
-                'message' => 'Roadmap not found'
+                'message' => 'You are not authorized to update this roadmap'
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|integer|exists:users,id',
                 'name' => 'required|string|max:30|min:3',
                 'description' => 'required|string|max:255',
-                'slug' => 'required|string|max:30|min:3',
             ]);
 
             if($validator->fails()){
@@ -159,10 +149,10 @@ class RoadmapController extends Controller
 
             try {
                 $roadmap->update([
-                    'user_id' => $request->user_id,
+                    'user_id' => $user->id,
                     'name' => $request->name,
                     'description' => $request->description,
-                    'slug' => $request->slug,
+                    'slug' => this->createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
                 return response()->json([
@@ -187,24 +177,44 @@ class RoadmapController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Roadmap $roadmap)
     {
-        //
-        $roadmap = Roadmap::find($id);
-
-        if(!$roadmap){
+        $authUser = Auth::user();
+        //Check if roadmap is belong to authUser
+        if($roadmap->user_id != $authUser->id){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
-                'message' => 'Roadmap not found'
+                'message' => 'You are not authorized to delete this roadmap'
             ], 404);
         } else {
-            $roadmap->delete();
-            return response()->json([
-                'status' => 'success',
-                'error' => false,
-                'message' => 'Roadmap deleted'
-            ], 200);
+            try {
+                $roadmap->delete();
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap deleted successfully',
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
         }
+    }
+
+    public function createUniqueSlug($slug, $id = null)
+    {
+        $slug = Str::slug($slug);
+        $count = Roadmap::where('slug', $slug)->count();
+        if($count > 0 && $id != null){
+            $count = Roadmap::where('slug', $slug)->where('id', '!=', $id)->count();
+        }
+        if($count > 0){
+            $slug = $slug.'-'.$count;
+        }
+        return $slug;
     }
 }
