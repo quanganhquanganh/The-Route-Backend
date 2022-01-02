@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRoadmapsTable extends Migration
+class CreateTestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateRoadmapsTable extends Migration
      */
     public function up()
     {
-        Schema::create('roadmaps', function (Blueprint $table) {
+        Schema::create('tests', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('test');
             $table->string('slug');
-            $table->string('description');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateRoadmapsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roadmaps');
+        Schema::dropIfExists('tests');
     }
 }

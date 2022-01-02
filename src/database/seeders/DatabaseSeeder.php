@@ -6,6 +6,7 @@ use App\Models\Roadmap;
 use App\Models\User;
 use App\Models\Milestone;
 use App\Models\Task;
+use App\Models\Test;
 use Illuminate\Database\Seeder;
 use DateInterval;
 use DateTime;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
 
     public function run()
     {
+        User::factory(10)->create();
         Roadmap::factory(10)->create();
 
         for ($i = 0; $i < 10; $i++) {

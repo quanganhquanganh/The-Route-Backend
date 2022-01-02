@@ -42,6 +42,30 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * Get the roadmaps for the user.
+     */
+    public function roadmaps()
+    {
+        return $this->hasMany(Roadmap::class);
+    }
+
+    /**
+     * Get the tasks for the user.
+     */
+    public function milestones()
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    /**
+     * Get the todos for the user.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function getJWTIdentifier() {
         return $this->getKey();
     }
