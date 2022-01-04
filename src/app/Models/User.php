@@ -49,7 +49,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Roadmap::class);
     }
-    
+
     /**
      * Get the tasks for the user.
      */
@@ -65,7 +65,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Task::class);
     }
-    
+
     public function getJWTIdentifier() {
         return $this->getKey();
     }
