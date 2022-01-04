@@ -55,7 +55,6 @@ Route::group([
     Route::put('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'update']);
     Route::delete('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'destroy']);
 
-
     //Milestone Routes
     Route::get('/users/{user:username}/milestones', [MilestoneController::class, 'index']);
     Route::post('/milestones', [MilestoneController::class, 'store']);
