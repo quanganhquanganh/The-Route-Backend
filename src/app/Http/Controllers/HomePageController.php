@@ -11,12 +11,26 @@ class HomePageController extends Controller
         $response = Roadmap::select('name', 'slug', 'description', 'path_img')
                             ->where('id', '<=', 4)
                             ->get();
-        return $response;
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'successfully',
+                'data' => $response
+            ], 200
+        );
     }
 
     public function menu () {
         $response = Roadmap::select('name', 'slug', 'description', 'path_img')->get();
-        return $response;
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'successfully',
+                'data' => $response
+            ], 200
+        );
     }
 
     public function myMenu(){
@@ -24,7 +38,14 @@ class HomePageController extends Controller
         $response = Roadmap::select('name', 'slug', 'description', 'path_img')
                             ->where('user_id', '=', $user_id)
                             ->get();
-        return $response;
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'successfully',
+                'data' => $response
+            ], 200
+        );
     }
 
 }
