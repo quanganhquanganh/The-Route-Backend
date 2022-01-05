@@ -115,7 +115,8 @@ class RoadmapController extends Controller
             'error' => false,
             'message' => 'Full roadmap retrieved successfully',
             'roadmap' => $roadmap,
-            'milestones' => $milestones
+            'milestones' => $milestones,
+            'is_roadmap_owner' => $user->id == $roadmap->user_id
         ], 200);
     }
 
