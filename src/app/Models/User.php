@@ -66,6 +66,24 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Task::class);
     }
 
+    //Get the user's liked roadmaps
+    public function likedRoadmaps()
+    {
+        return $this->belongsToMany(Roadmap::class, 'likes', 'user_id', 'roadmap_id');
+    }
+
+    //Get the user's followed roadmaps
+    public function followedRoadmaps()
+    {
+        return $this->belongsToMany(Roadmap::class, 'follows', 'user_id', 'roadmap_id');
+    }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+
     public function getJWTIdentifier() {
         return $this->getKey();
     }

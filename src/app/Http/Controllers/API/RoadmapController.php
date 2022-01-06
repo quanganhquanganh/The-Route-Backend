@@ -24,6 +24,11 @@ class RoadmapController extends Controller
     public function index(User $user)
     {
         $roadmaps = $user->roadmaps;
+        $roadmaps = $roadmaps->map(function ($roadmap) {
+            $roadmap->likes_count = $roadmap->likes()->count();
+            $roadmap->follows_count = $roadmap->follows()->count();
+            return $roadmap;
+        });
         return response()->json(
             [
                 'status' => 'success',
@@ -84,6 +89,8 @@ class RoadmapController extends Controller
     public function show(Roadmap $roadmap)
     {
         //
+        $roadmap->likes_count = $roadmap->likes()->count();
+        $roadmap->follows_count = $roadmap->follows()->count();
         return response()->json([
             'status' => 'success',
             'error' => false,
@@ -101,6 +108,8 @@ class RoadmapController extends Controller
      */
     public function full(Roadmap $roadmap)
     {
+        $roadmap->likes_count = $roadmap->likes()->count();
+        $roadmap->follows_count = $roadmap->follows()->count();
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
         $user = Auth::user();
@@ -204,6 +213,150 @@ class RoadmapController extends Controller
                 ], 404);
             }
         }
+    }
+
+    //Function for user to like a roadmap
+    public function like(Roadmap $roadmap)
+    {
+        $user = Auth::user();
+        //Check if roadmap already liked
+        if($roadmap->likes->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You already liked this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->likes()->attach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap liked successfully',
+                    'likes' => $roadmap->likes()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to unlike a roadmap
+    public function unlike(Roadmap $roadmap)
+    {
+        $user = Auth::user(); 
+        //Check if roadmap already liked
+        if(!$roadmap->likes->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You did not like this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->likes()->detach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap unliked successfully',
+                    'likes' => $roadmap->likes()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to follow a roadmap
+    public function follow(Roadmap $roadmap)
+    {
+        $user = Auth::user(); 
+        //Check if roadmap already followed
+        if($roadmap->followers->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You already followed this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->followers()->attach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap followed successfully',
+                    'followers' => $roadmap->followers()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to unfollow a roadmap
+    public function unfollow(Roadmap $roadmap)
+    {
+        $user = Auth::user(); 
+        //Check if roadmap already followed
+        if(!$roadmap->followers->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You did not follow this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->followers()->detach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap unfollowed successfully',
+                    'followers' => $roadmap->followers()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for getting all the roadmaps that the user liked
+    public function liked(User $user)
+    {
+        $likedRoadmaps = $user->likedRoadmaps;
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Liked roadmaps',
+            'likedRoadmaps' => $likedRoadmaps
+        ], 200);
+    }
+
+    //Function for getting all the roadmaps that the user followed
+    public function followed(User $user)
+    {
+        $followedRoadmaps = $user->followedRoadmaps;
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Followed roadmaps',
+            'followedRoadmaps' => $followedRoadmaps
+        ], 200);
     }
 
     public function createUniqueSlug($slug, $id = null)

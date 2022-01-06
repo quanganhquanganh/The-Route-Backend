@@ -33,13 +33,23 @@ Route::group([
 
     //Roadmap Routes
     Route::get('/users/{user:username}/roadmaps', [RoadmapController::class, 'index']);
+    Route::get('/users/{user:username}/liked-roadmaps', [RoadmapController::class, 'liked']);
+    Route::get('/users/{user:username}/followed-roadmaps', [RoadmapController::class, 'followed']);
     Route::get('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'show']);
     Route::get('/roadmaps/{roadmap:slug}/full', [RoadmapController::class, 'full']);
     Route::post('/roadmaps', [RoadmapController::class, 'store']);
     Route::put('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'update']);
     Route::delete('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'destroy']);
 
-    //Milestone Routes
+    //Like and unlike
+    Route::post('/roadmaps/{roadmap:slug}/like', [RoadmapController::class, 'like']);
+    Route::delete('/roadmaps/{roadmap:slug}/unlike', [RoadmapController::class, 'unlike']);
+
+    //Follow and unfollow
+    Route::post('/roadmaps/{roadmap:slug}/follow', [RoadmapController::class, 'follow']);
+    Route::delete('/roadmaps/{roadmap:slug}/unfollow', [RoadmapController::class, 'unfollow']);
+
+    //Milestone Routes 
     Route::get('/users/{user:username}/milestones', [MilestoneController::class, 'index']);
     Route::post('/milestones', [MilestoneController::class, 'store']);
     Route::put('/milestones/{id}', [MilestoneController::class, 'update']);
