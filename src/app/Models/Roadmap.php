@@ -13,6 +13,7 @@ class Roadmap extends Model
         'name',
         'user_id',
         'description',
+        'image',
         'slug'
     ];
 

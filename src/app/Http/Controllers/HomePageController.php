@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class HomePageController extends Controller
 {
     public function highlight () {
-        $response = Roadmap::select('name', 'slug', 'description', 'path_img')
+        $response = Roadmap::select('name', 'slug', 'description', 'image')
                             ->where('id', '<=', 4)
                             ->get();
         return response()->json(
@@ -22,7 +22,7 @@ class HomePageController extends Controller
     }
 
     public function menu () {
-        $response = Roadmap::select('name', 'slug', 'description', 'path_img')->get();
+        $response = Roadmap::select('name', 'slug', 'description', 'image')->get();
         return response()->json(
             [
                 'status' => 'success',
@@ -35,7 +35,7 @@ class HomePageController extends Controller
 
     public function myMenu(){
         $user_id = Auth::user()->id;
-        $response = Roadmap::select('name', 'slug', 'description', 'path_img')
+        $response = Roadmap::select('name', 'slug', 'description', 'image')
                             ->where('user_id', '=', $user_id)
                             ->get();
         return response()->json(
