@@ -46,6 +46,7 @@ class RoadmapController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:30|min:3',
             'description' => 'required|string|max:255',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1000000',
         ]);
 
         if($validator->fails()){
@@ -53,13 +54,24 @@ class RoadmapController extends Controller
         }
 
         try {
+            $imageName = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $imageName);
+            } else {
+                $imageName = 'default.png';
+            }
+
             $roadmap = Roadmap::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'slug' => this->createUniqueSlug($request->name),
+                'image' => $imageName,
                 'user_id' => Auth::user()->id,
             ]);
-            
+
             return response()->json([
                 'status' => 'success',
                 'error' => false,
@@ -142,6 +154,7 @@ class RoadmapController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:30|min:3',
                 'description' => 'required|string|max:255',
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1000000',
             ]);
 
             if($validator->fails()){
@@ -149,10 +162,21 @@ class RoadmapController extends Controller
             }
 
             try {
+                $imageName = null;
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $imageName = time() . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('/images');
+                    $image->move($destinationPath, $imageName);
+                } else {
+                    $imageName = $roadmap->image;
+                }
+
                 $roadmap->update([
                     'user_id' => $user->id,
                     'name' => $request->name,
                     'description' => $request->description,
+                    'image' => $imageName,
                     'slug' => this->createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
