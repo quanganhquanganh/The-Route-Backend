@@ -13,6 +13,20 @@ use Facade\FlareClient\Http\Exception\NotFound;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+//use Storage
+
+function createUniqueSlug($slug, $id = null)
+{
+    $slug = Str::slug($slug);
+    $count = Roadmap::where('slug', $slug)->count();
+    if($count > 0 && $id != null){
+        $count = Roadmap::where('slug', $slug)->where('id', '!=', $id)->count();
+    }
+    if($count > 0){
+        $slug = $slug.'-'.$count;
+    }
+    return $slug;
+}
 
 class RoadmapController extends Controller
 {
@@ -24,6 +38,10 @@ class RoadmapController extends Controller
     public function index(User $user)
     {
         $roadmaps = $user->roadmaps;
+        $roadmaps = $roadmaps->map(function ($roadmap) {
+            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            return $roadmap;
+        });
         return response()->json(
             [
                 'status' => 'success',
@@ -44,9 +62,9 @@ class RoadmapController extends Controller
     {
         //
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:30|min:3',
+            'name' => 'required|string|max:30|min:1',
             'description' => 'required|string|max:255',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1000000',
+            'image' => 'base64image',
         ]);
 
         if($validator->fails()){
@@ -55,11 +73,12 @@ class RoadmapController extends Controller
 
         try {
             $imageName = null;
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path('/images');
-                $image->move($destinationPath, $imageName);
+            if($request->has('image')) {
+                $image = $request->image;  // your base64 encoded
+                $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
+                $imageName = time().'.'.'png';
+                $destinationPath = public_path('/images').'/'.$imageName;
+                file_put_contents($destinationPath, $image);
             } else {
                 $imageName = 'default.png';
             }
@@ -67,7 +86,7 @@ class RoadmapController extends Controller
             $roadmap = Roadmap::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'slug' => this->createUniqueSlug($request->name),
+                'slug' => createUniqueSlug($request->name),
                 'image' => $imageName,
                 'user_id' => Auth::user()->id,
             ]);
@@ -96,6 +115,7 @@ class RoadmapController extends Controller
     public function show(Roadmap $roadmap)
     {
         //
+        $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
         return response()->json([
             'status' => 'success',
             'error' => false,
@@ -154,7 +174,7 @@ class RoadmapController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:30|min:3',
                 'description' => 'required|string|max:255',
-                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1000000',
+                'image' => 'base64image',
             ]);
 
             if($validator->fails()){
@@ -163,11 +183,18 @@ class RoadmapController extends Controller
 
             try {
                 $imageName = null;
-                if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-                    $imageName = time() . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('/images');
-                    $image->move($destinationPath, $imageName);
+                if($request->has('image')) {
+                    $image = $request->image;  // your base64 encoded
+                    $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
+                    $imageName = time().'.'.'png';
+                    $destinationPath = public_path('/images').'/'.$imageName;
+                    file_put_contents($destinationPath, $image);
+                    if($roadmap->image != 'default.png'){
+                        $oldImage = public_path('/images/'.$roadmap->image);
+                        if(file_exists($oldImage)){
+                            unlink($oldImage);
+                        }
+                    }
                 } else {
                     $imageName = $roadmap->image;
                 }
@@ -177,7 +204,7 @@ class RoadmapController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'image' => $imageName,
-                    'slug' => this->createUniqueSlug($request->name, $roadmap->id),
+                    'slug' => createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
                 return response()->json([
@@ -228,18 +255,5 @@ class RoadmapController extends Controller
                 ], 404);
             }
         }
-    }
-
-    public function createUniqueSlug($slug, $id = null)
-    {
-        $slug = Str::slug($slug);
-        $count = Roadmap::where('slug', $slug)->count();
-        if($count > 0 && $id != null){
-            $count = Roadmap::where('slug', $slug)->where('id', '!=', $id)->count();
-        }
-        if($count > 0){
-            $slug = $slug.'-'.$count;
-        }
-        return $slug;
     }
 }
