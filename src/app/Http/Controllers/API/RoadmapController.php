@@ -443,7 +443,7 @@ class RoadmapController extends Controller
             'status' => 'success',
             'error' => false,
             'message' => 'Liked roadmaps',
-            'likedRoadmaps' => $likedRoadmaps
+            'data' => $likedRoadmaps
         ], 200);
     }
 
@@ -455,7 +455,7 @@ class RoadmapController extends Controller
             'status' => 'success',
             'error' => false,
             'message' => 'Followed roadmaps',
-            'followedRoadmaps' => $followedRoadmaps
+            'data' => $followedRoadmaps
         ], 200);
     }
 
