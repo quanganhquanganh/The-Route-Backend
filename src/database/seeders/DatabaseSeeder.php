@@ -6,6 +6,8 @@ use App\Models\Roadmap;
 use App\Models\User;
 use App\Models\Milestone;
 use App\Models\Task;
+use App\Models\Like;
+use App\Models\Follow;
 use App\Models\Test;
 use Illuminate\Database\Seeder;
 use DateInterval;
@@ -75,6 +77,31 @@ class DatabaseSeeder extends Seeder
                         'user_id' => $i + 1,
                         'start_date' => $random,
                         'end_date' => (clone $random)->add(new DateInterval('P3D')),
+                    ]);
+                }
+            }
+        }
+        //Likes table
+        for ($i = 0; $i < 10; $i++) {
+            for ($j = 0; $j < 10; $j++) {
+                $random = rand(0, 1);
+                if ($random == 1) {
+                    Like::factory()->create([
+                        'user_id' => $i + 1,
+                        'roadmap_id' => $j + 1,
+                    ]);
+                }
+            }
+        }
+
+        //Follows table
+        for ($i = 0; $i < 10; $i++) {
+            for ($j = 0; $j < 10; $j++) {
+                $random = rand(0, 1);
+                if ($random == 1) {
+                    Follow::factory()->create([
+                        'user_id' => $i + 1,
+                        'roadmap_id' => $j + 1,
                     ]);
                 }
             }

@@ -39,6 +39,8 @@ class RoadmapController extends Controller
     {
         $roadmaps = $user->roadmaps;
         $roadmaps = $roadmaps->map(function ($roadmap) {
+            $roadmap->likes_count = $roadmap->likes()->count();
+            $roadmap->follows_count = $roadmap->followers()->count();
             $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
             return $roadmap;
         });
@@ -116,6 +118,8 @@ class RoadmapController extends Controller
     public function show(Roadmap $roadmap)
     {
         //
+        $roadmap->likes_count = $roadmap->likes()->count();
+        $roadmap->follows_count = $roadmap->followers()->count();
         $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
         return response()->json([
             'status' => 'success',
@@ -134,14 +138,19 @@ class RoadmapController extends Controller
      */
     public function full(Roadmap $roadmap)
     {
+        $roadmap->likes_count = $roadmap->likes()->count();
+        $roadmap->follows_count = $roadmap->followers()->count();
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
+        
         $user = Auth::user();
-        if($user->id == $roadmap->user_id){
-            $milestones = $milestones->map(function($milestone) {
-                $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
-                return $milestone;
-            });
+        if($user) {
+            if($user->id == $roadmap->user_id){
+                $milestones = $milestones->map(function($milestone) {
+                    $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
+                    return $milestone;
+                });
+            }
         }
         return response()->json([
             'status' => 'success',
@@ -164,6 +173,14 @@ class RoadmapController extends Controller
     {
         //
         $user = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to update a roadmap'
+            ], 401);
+        }
         //Check if roadmap is belong to user
         if($roadmap->user_id != $user->id){
             return response()->json([
@@ -233,6 +250,14 @@ class RoadmapController extends Controller
     public function destroy(Roadmap $roadmap)
     {
         $authUser = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to delete a roadmap'
+            ], 401);
+        }
         //Check if roadmap is belong to authUser
         if($roadmap->user_id != $authUser->id){
             return response()->json([
@@ -256,5 +281,194 @@ class RoadmapController extends Controller
                 ], 404);
             }
         }
+    }
+
+    //Function for user to like a roadmap
+    public function like(Roadmap $roadmap)
+    {
+        $user = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to like a roadmap'
+            ], 401);
+        }
+        //Check if roadmap already liked
+        if($roadmap->likes->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You already liked this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->likes()->attach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap liked successfully',
+                    'likes' => $roadmap->likes()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to unlike a roadmap
+    public function unlike(Roadmap $roadmap)
+    {
+        $user = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to unlike a roadmap'
+            ], 401);
+        }
+        //Check if roadmap already liked
+        if(!$roadmap->likes->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You did not like this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->likes()->detach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap unliked successfully',
+                    'likes' => $roadmap->likes()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to follow a roadmap
+    public function follow(Roadmap $roadmap)
+    {
+        $user = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to follow a roadmap'
+            ], 401);
+        }
+        //Check if roadmap already followed
+        if($roadmap->followers->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You already followed this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->followers()->attach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap followed successfully',
+                    'followers' => $roadmap->followers()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for user to unfollow a roadmap
+    public function unfollow(Roadmap $roadmap)
+    {
+        $user = Auth::user();
+        //Check if no user is logged in
+        if(!$user){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You must be logged in to unfollow a roadmap'
+            ], 401);
+        }
+        //Check if roadmap already followed
+        if(!$roadmap->followers->contains($user->id)){
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => 'You did not follow this roadmap'
+            ], 404);
+        } else {
+            try {
+                $roadmap->followers()->detach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'error' => false,
+                    'message' => 'Roadmap unfollowed successfully',
+                    'followers' => $roadmap->followers()->count()
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        }
+    }
+
+    //Function for getting all the roadmaps that the user liked
+    public function liked(User $user)
+    {
+        $likedRoadmaps = $user->likedRoadmaps;
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Liked roadmaps',
+            'likedRoadmaps' => $likedRoadmaps
+        ], 200);
+    }
+
+    //Function for getting all the roadmaps that the user followed
+    public function followed(User $user)
+    {
+        $followedRoadmaps = $user->followedRoadmaps;
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Followed roadmaps',
+            'followedRoadmaps' => $followedRoadmaps
+        ], 200);
+    }
+
+    public function createUniqueSlug($slug, $id = null)
+    {
+        $slug = Str::slug($slug);
+        $count = Roadmap::where('slug', $slug)->count();
+        if($count > 0 && $id != null){
+            $count = Roadmap::where('slug', $slug)->where('id', '!=', $id)->count();
+        }
+        if($count > 0){
+            $slug = $slug.'-'.$count;
+        }
+        return $slug;
     }
 }

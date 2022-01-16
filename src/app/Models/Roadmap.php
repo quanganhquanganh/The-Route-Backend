@@ -31,4 +31,19 @@ class Roadmap extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
+    
+    public function likes()
+    {
+        return $this->belongsToMany(User::class, 'likes');
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows');
+    }
 }
