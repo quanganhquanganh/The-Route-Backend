@@ -439,6 +439,12 @@ class RoadmapController extends Controller
     public function liked(User $user)
     {
         $likedRoadmaps = $user->likedRoadmaps;
+        $likedRoadmaps = $likedRoadmaps->map(function($roadmap){
+            $roadmap->likes_count = $roadmap->likes()->count();
+            $roadmap->follows_count = $roadmap->followers()->count();
+            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            return $roadmap;
+        });
         return response()->json([
             'status' => 'success',
             'error' => false,
@@ -451,6 +457,12 @@ class RoadmapController extends Controller
     public function followed(User $user)
     {
         $followedRoadmaps = $user->followedRoadmaps;
+        $followedRoadmaps = $followedRoadmaps->map(function($roadmap){
+            $roadmap->likes_count = $roadmap->likes()->count();
+            $roadmap->follows_count = $roadmap->followers()->count();
+            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            return $roadmap;
+        });
         return response()->json([
             'status' => 'success',
             'error' => false,
