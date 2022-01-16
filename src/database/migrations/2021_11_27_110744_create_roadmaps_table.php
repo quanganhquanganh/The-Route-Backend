@@ -20,6 +20,7 @@ class CreateRoadmapsTable extends Migration
             $table->string('description');
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->integer('current');
             $table->timestamps();
         });
     }

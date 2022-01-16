@@ -205,6 +205,7 @@ class RoadmapController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'image' => $imageName,
+                    'current' => $request->current,
                     'slug' => createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
