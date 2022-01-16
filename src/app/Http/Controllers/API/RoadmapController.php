@@ -47,6 +47,7 @@ class RoadmapController extends Controller
                 'status' => 'success',
                 'error' => false,
                 'message' => 'Roadmaps retrieved successfully',
+                'same_user' => $user->id == Auth::id(),
                 'data' => $roadmaps
             ], 200
         );
