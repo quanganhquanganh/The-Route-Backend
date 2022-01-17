@@ -51,7 +51,7 @@ class MilestoneController extends Controller
             'description' => 'required|string|max:255',
             'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
             'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
-            'type' => 'required|string|in:daily,weekly,monthly,yearly',
+            'type' => 'required|string|in:date,month,year',
             'roadmap_id' => 'required|exists:roadmaps,id|in:'.$user->roadmaps->pluck('id')->implode(','),
         ]);
 
@@ -111,7 +111,7 @@ class MilestoneController extends Controller
                 'description' => 'required|string|max:255',
                 'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
                 'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
-                'type' => 'required|string|in:daily,weekly,monthly,yearly',
+                'type' => 'required|string|in:date,month,year',
             ]);
 
             if($validator->fails()){
