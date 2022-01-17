@@ -49,8 +49,8 @@ class MilestoneController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|min:3',
             'description' => 'required|string|max:255',
-            'start_date' => 'required|date|date_format:Y-m-d|before:end_date',
-            'end_date' => 'required|date|date_format:Y-m-d|after:start_date',
+            'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
+            'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
             'type' => 'required|string|in:daily,weekly,monthly,yearly',
             'roadmap_id' => 'required|exists:roadmaps,id|in:'.$user->roadmaps->pluck('id')->implode(','),
         ]);
