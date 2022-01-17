@@ -16,7 +16,7 @@ class CreateRoadmapsTable extends Migration
         Schema::create('roadmaps', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->string('description');
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

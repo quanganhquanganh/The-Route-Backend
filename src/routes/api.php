@@ -40,7 +40,7 @@ Route::group([
     Route::post('/roadmaps', [RoadmapController::class, 'store']);
     Route::put('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'update']);
     Route::delete('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'destroy']);
-    Route::post('/roadmaps/{roadmap:slug}', [RoadmapController::class, 'duplicate']);
+    Route::post('/roadmaps/{roadmap:slug}/duplicate', [RoadmapController::class, 'duplicate']);
     
     //Search roadmap
     Route::get('/roadmaps/search/{query}', [RoadmapController::class, 'search']);

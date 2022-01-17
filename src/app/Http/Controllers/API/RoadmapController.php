@@ -18,7 +18,15 @@ use Illuminate\Support\Str;
 function createUniqueSlug($slug, $id = null)
 {
     $slug = Str::slug($slug);
-    $count = Roadmap::where('slug', $slug)->count();
+    $roadmaps = Roadmap::where('slug', 'like', $slug . '%')->get();
+    $count = 0;
+    foreach ($roadmaps as $roadmap) {
+        $slugParts = explode('-', $roadmap->slug);
+        $newCount = (int)$slugParts[count($slugParts) - 1] + 1;
+        if ($newCount > $count) {
+            $count = $newCount;
+        }
+    }
     if($count > 0 && $id != null){
         $count = Roadmap::where('slug', $slug)->where('id', '!=', $id)->count();
     }
@@ -134,15 +142,6 @@ class RoadmapController extends Controller
             $newMilestone->roadmap_id = $newRoadmap->id;
             $newMilestone->user_id = Auth::user()->id;
             $newMilestone->save();
-
-            $tasks = $milestone->tasks;
-            foreach ($tasks as $task) {
-                $newTask = $task->replicate();
-                $newTask->milestone_id = $newMilestone->id;
-                $newTask->roadmap_id = $newRoadmap->id;
-                $newTask->user_id = Auth::user()->id;
-                $newTask->save();
-            }
         }
 
         return response()->json([
