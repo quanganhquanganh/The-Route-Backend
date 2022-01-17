@@ -50,6 +50,7 @@ class RoadmapController extends Controller
             $roadmap->likes_count = $roadmap->likes()->count();
             $roadmap->follows_count = $roadmap->followers()->count();
             $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->liked = $roadmap->likes()->where('user_id', Auth::id())->count() > 0;
             return $roadmap;
         });
         return response()->json(
@@ -183,6 +184,7 @@ class RoadmapController extends Controller
     {
         $roadmap->likes_count = $roadmap->likes()->count();
         $roadmap->follows_count = $roadmap->followers()->count();
+        $roadmap->liked = $roadmap->likes()->where('user_id', Auth::id())->count() > 0;
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
         
