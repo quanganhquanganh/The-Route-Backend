@@ -71,7 +71,8 @@ class TaskController extends Controller
                 'content' => $request->content,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'completed' => false
+                'completed' => false,
+                'note' => $request->note
             ]);
 
             return response()->json([
@@ -115,13 +116,13 @@ class TaskController extends Controller
                 'content' => 'required|string|max:100|min:1',
                 'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
                 'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
-                'completed' => 'required|boolean'
+                'completed' => 'required|boolean',
             ]);
 
             if ($validator->fails()) {
                 return $this->validationErrors($validator->errors());
             }
-            
+
             try {
                 $task->update([
                     'roadmap_id' => $request->roadmap_id,
@@ -130,7 +131,8 @@ class TaskController extends Controller
                     'content' => $request->content,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
-                    'completed' => $request->completed
+                    'completed' => $request->completed,
+                    'note' => $request->note
                 ]);
 
                 return response()->json([

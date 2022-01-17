@@ -17,6 +17,7 @@ class Task extends Model
         'milestone_id',
         'roadmap_id',
         'user_id',
+        'note'
     ];
 
     public function milestone()
