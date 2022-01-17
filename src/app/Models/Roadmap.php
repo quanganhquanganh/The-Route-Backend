@@ -14,7 +14,8 @@ class Roadmap extends Model
         'user_id',
         'description',
         'image',
-        'slug'
+        'slug',
+        'current'
     ];
 
     public function users()

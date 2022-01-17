@@ -21,6 +21,7 @@ class RoadmapFactory extends Factory
             'description' => $this->faker->sentence(10),
             'image' => 'default.png',
             'slug' => $this->faker->slug(2),
+            'current' => 5
         ];
     }
 }
