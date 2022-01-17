@@ -55,6 +55,18 @@ class RoadmapController extends Controller
         );
     }
 
+    public function search($query) {
+        $roadmaps = Roadmap::where('name', 'like', '%'.$query.'%')->get();
+        return response()->json(
+            [
+                'status' => 'success',
+                'error' => false,
+                'message' => 'Roadmaps retrieved successfully',
+                'data' => $roadmaps
+            ], 200
+        );
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -107,6 +119,38 @@ class RoadmapController extends Controller
                 'message' => $e->getMessage()
             ], 404);
         }
+    }
+
+    public function duplicate(Roadmap $roadmap)
+    {
+        $newRoadmap = $roadmap->replicate();
+        $newRoadmap->slug = createUniqueSlug($newRoadmap->name);
+        $newRoadmap->user_id = Auth::user()->id;
+        $newRoadmap->save();
+
+        $milestones = $roadmap->milestones;
+        foreach ($milestones as $milestone) {
+            $newMilestone = $milestone->replicate();
+            $newMilestone->roadmap_id = $newRoadmap->id;
+            $newMilestone->user_id = Auth::user()->id;
+            $newMilestone->save();
+
+            $tasks = $milestone->tasks;
+            foreach ($tasks as $task) {
+                $newTask = $task->replicate();
+                $newTask->milestone_id = $newMilestone->id;
+                $newTask->roadmap_id = $newRoadmap->id;
+                $newTask->user_id = Auth::user()->id;
+                $newTask->save();
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Roadmap duplicated successfully',
+            'roadmap' => $newRoadmap
+        ], 201);
     }
 
     /**
@@ -250,7 +294,7 @@ class RoadmapController extends Controller
      */
     public function destroy(Roadmap $roadmap)
     {
-        $authUser = Auth::user();
+        $user = Auth::user();
         //Check if no user is logged in
         if(!$user){
             return response()->json([
@@ -260,7 +304,7 @@ class RoadmapController extends Controller
             ], 401);
         }
         //Check if roadmap is belong to authUser
-        if($roadmap->user_id != $authUser->id){
+        if($roadmap->user_id != $user->id){
             return response()->json([
                 'status' => 'error',
                 'error' => true,

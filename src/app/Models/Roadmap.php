@@ -32,6 +32,11 @@ class Roadmap extends Model
     {
         return $this->hasMany(Task::class);
     }
+    
+    // public function tags()
+    // {
+    //     return $this->belongsToMany(Tag::class, 'roadmap_tags');
+    // }
 
     // public function getRouteKeyName()
     // {
