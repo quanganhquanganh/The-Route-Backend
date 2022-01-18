@@ -57,11 +57,11 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'password' => bcrypt($request->password),
-            'username' => $this->createUniqueUsername($request->name)
-        ]);
+        $user = User::create(array_merge(
+            ['username' => $this->createUniqueUsername($request->name)],
+            $validator->validated(),
+            ['password' => bcrypt($request->password)]
+        ));
 
         $token = Auth::attempt($validator->validated());
 
