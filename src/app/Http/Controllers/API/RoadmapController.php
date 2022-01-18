@@ -308,7 +308,7 @@ class RoadmapController extends Controller
      */
     public function destroy(Roadmap $roadmap)
     {
-        $user = Auth::user();
+        $authUser = Auth::user();
         //Check if no user is logged in
         if(!$authUser){
             return response()->json([
@@ -318,7 +318,7 @@ class RoadmapController extends Controller
             ], 401);
         }
         //Check if roadmap is belong to authUser
-        if($roadmap->user_id != $user->id){
+        if($roadmap->user_id != $authUser->id){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
