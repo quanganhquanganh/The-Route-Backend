@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('username')->nullable();//Tên của users
             $table->string('password');
             $table->string('avatar')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('current_job')->nullable();
             $table->boolean('is_admin')->nullable();

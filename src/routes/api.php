@@ -23,6 +23,8 @@ Route::group([
 ], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/getUser', [AuthController::class, 'getUser']);
+    Route::post('/updateUser', [AuthController::class, 'updateUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
 
@@ -49,11 +51,14 @@ Route::group([
     Route::post('/roadmaps/{roadmap:slug}/like', [RoadmapController::class, 'like']);
     Route::delete('/roadmaps/{roadmap:slug}/unlike', [RoadmapController::class, 'unlike']);
 
+    //Progress
+    Route::get('/progress', [RoadmapController::class, 'progress']);
+
     //Follow and unfollow
     Route::post('/roadmaps/{roadmap:slug}/follow', [RoadmapController::class, 'follow']);
     Route::delete('/roadmaps/{roadmap:slug}/unfollow', [RoadmapController::class, 'unfollow']);
 
-    //Milestone Routes 
+    //Milestone Routes
     Route::get('/users/{user:username}/milestones', [MilestoneController::class, 'index']);
     Route::post('/milestones', [MilestoneController::class, 'store']);
     Route::put('/milestones/{id}', [MilestoneController::class, 'update']);
