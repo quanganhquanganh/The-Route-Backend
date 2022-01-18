@@ -18,7 +18,7 @@ class Roadmap extends Model
         'current'
     ];
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -26,11 +26,6 @@ class Roadmap extends Model
     public function milestones()
     {
         return $this->hasMany(Milestone::class);
-    }
-
-    public function tasks()
-    {
-        return $this->hasMany(Task::class);
     }
     
     // public function tags()
@@ -48,7 +43,7 @@ class Roadmap extends Model
         return $this->belongsToMany(User::class, 'likes');
     }
 
-    public function followers()
+    public function follows()
     {
         return $this->belongsToMany(User::class, 'follows');
     }

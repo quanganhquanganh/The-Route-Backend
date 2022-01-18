@@ -48,9 +48,10 @@ class RoadmapController extends Controller
         $roadmaps = $user->roadmaps;
         $roadmaps = $roadmaps->map(function ($roadmap) {
             $roadmap->likes_count = $roadmap->likes()->count();
-            $roadmap->follows_count = $roadmap->followers()->count();
+            $roadmap->follows_count = $roadmap->follows()->count();
             $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
             $roadmap->liked = $roadmap->likes()->where('user_id', Auth::id())->count() > 0;
+            $roadmap->user;
             return $roadmap;
         });
         return response()->json(
@@ -65,7 +66,16 @@ class RoadmapController extends Controller
     }
 
     public function search($query) {
-        $roadmaps = Roadmap::where('name', 'like', '%'.$query.'%')->get();
+        //Get roadmap and user's data from database using query
+        $roadmaps = Roadmap::where('name', 'like', '%' . $query . '%')->get();
+        $roadmaps = $roadmaps->map(function ($roadmap) {
+            $roadmap->likes_count = $roadmap->likes()->count();
+            $roadmap->follows_count = $roadmap->follows()->count();
+            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->user;
+            $roadmap->liked = $roadmap->likes()->where('user_id', Auth::id())->count() > 0;
+            return $roadmap;
+        });
         return response()->json(
             [
                 'status' => 'success',
@@ -164,8 +174,9 @@ class RoadmapController extends Controller
     {
         //
         $roadmap->likes_count = $roadmap->likes()->count();
-        $roadmap->follows_count = $roadmap->followers()->count();
+        $roadmap->follows_count = $roadmap->follows()->count();
         $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+        $_ = $roadmap->user;
         return response()->json([
             'status' => 'success',
             'error' => false,
@@ -184,7 +195,7 @@ class RoadmapController extends Controller
     public function full(Roadmap $roadmap)
     {
         $roadmap->likes_count = $roadmap->likes()->count();
-        $roadmap->follows_count = $roadmap->followers()->count();
+        $roadmap->follows_count = $roadmap->follows()->count();
         $roadmap->liked = $roadmap->likes()->where('user_id', Auth::id())->count() > 0;
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
@@ -198,13 +209,14 @@ class RoadmapController extends Controller
                 });
             }
         }
+        $_ = $roadmap->user;
         return response()->json([
             'status' => 'success',
             'error' => false,
             'message' => 'Full roadmap retrieved successfully',
             'roadmap' => $roadmap,
             'milestones' => $milestones,
-            'is_roadmap_owner' => $user->id == $roadmap->user_id
+            'is_roadmap_owner' => ($user && $user->id == $roadmap->user_id)
         ], 200);
     }
 
@@ -419,7 +431,7 @@ class RoadmapController extends Controller
             ], 401);
         }
         //Check if roadmap already followed
-        if($roadmap->followers->contains($user->id)){
+        if($roadmap->follows->contains($user->id)){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
@@ -427,12 +439,12 @@ class RoadmapController extends Controller
             ], 404);
         } else {
             try {
-                $roadmap->followers()->attach($user->id);
+                $roadmap->follows()->attach($user->id);
                 return response()->json([
                     'status' => 'success',
                     'error' => false,
                     'message' => 'Roadmap followed successfully',
-                    'followers' => $roadmap->followers()->count()
+                    'follows' => $roadmap->follows()->count()
                 ], 200);
             } catch (Exception $e) {
                 return response()->json([
@@ -457,7 +469,7 @@ class RoadmapController extends Controller
             ], 401);
         }
         //Check if roadmap already followed
-        if(!$roadmap->followers->contains($user->id)){
+        if(!$roadmap->follows->contains($user->id)){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
@@ -465,12 +477,12 @@ class RoadmapController extends Controller
             ], 404);
         } else {
             try {
-                $roadmap->followers()->detach($user->id);
+                $roadmap->follows()->detach($user->id);
                 return response()->json([
                     'status' => 'success',
                     'error' => false,
                     'message' => 'Roadmap unfollowed successfully',
-                    'followers' => $roadmap->followers()->count()
+                    'follows' => $roadmap->follows()->count()
                 ], 200);
             } catch (Exception $e) {
                 return response()->json([
@@ -488,7 +500,7 @@ class RoadmapController extends Controller
         $likedRoadmaps = $user->likedRoadmaps;
         $likedRoadmaps = $likedRoadmaps->map(function($roadmap){
             $roadmap->likes_count = $roadmap->likes()->count();
-            $roadmap->follows_count = $roadmap->followers()->count();
+            $roadmap->follows_count = $roadmap->follows()->count();
             $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
             return $roadmap;
         });
@@ -506,7 +518,7 @@ class RoadmapController extends Controller
         $followedRoadmaps = $user->followedRoadmaps;
         $followedRoadmaps = $followedRoadmaps->map(function($roadmap){
             $roadmap->likes_count = $roadmap->likes()->count();
-            $roadmap->follows_count = $roadmap->followers()->count();
+            $roadmap->follows_count = $roadmap->follows()->count();
             $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
             return $roadmap;
         });
