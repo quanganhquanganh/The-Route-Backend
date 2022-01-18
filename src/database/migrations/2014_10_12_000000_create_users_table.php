@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');//Tên đăng nhập
-            $table->string('username')->nullable();//Tên của users
+            $table->string('username');//Tên của users
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->date('birth_date')->nullable();
