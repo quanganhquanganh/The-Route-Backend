@@ -281,7 +281,7 @@ class RoadmapController extends Controller
                     'description' => $request->description,
                     'image' => $imageName,
                     'current' => $request->current,
-                    'slug' => createUniqueSlug($request->name, $roadmap->id),
+                    'slug' => ($roadmap->name == $request->name) ? $roadmap->slug : createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
                 return response()->json([
@@ -368,7 +368,7 @@ class RoadmapController extends Controller
                     'status' => 'success',
                     'error' => false,
                     'message' => 'Roadmap liked successfully',
-                    'likes' => $roadmap->likes()->count()
+                    'likes_count' => $roadmap->likes()->count()
                 ], 200);
             } catch (Exception $e) {
                 return response()->json([

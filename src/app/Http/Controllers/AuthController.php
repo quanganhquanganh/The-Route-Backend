@@ -59,7 +59,8 @@ class AuthController extends Controller
         User::create(array_merge(
             ['username' => $this->createUniqueUsername($request->name)],
             $validator->validated(),
-            ['password' => bcrypt($request->password)]
+            ['password' => bcrypt($request->password)],
+            ['avatar' => 'default-avatar.png']
         ));
 
         $token = Auth::attempt($validator->validated());
@@ -86,11 +87,11 @@ class AuthController extends Controller
         $id = Auth::user()->id;
         $user = User::find($id);
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
-            'current_job' => 'required|string',
-            // 'avatar' => 'required|string',
-            'email' => 'required|string',
-            'phone' => 'required|string',
+            'username' => 'string|nullable|between:2,100|unique:users,username,' . $id,
+            'current_job' => 'string|nullable',
+            'avatar' => 'base64image',
+            'email' => 'string|nullable',
+            'phone' => 'string|nullable',
         ]);
 
         if ($validator->fails()) {
@@ -98,9 +99,25 @@ class AuthController extends Controller
         }
 
         try {
+            $imageName = null;
+            if($request->has('avatar')) {
+                $image = $request->avatar;  // your base64 encoded
+                $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
+                $imageName = time().'.'.'png';
+                $destinationPath = public_path('/images').'/'.$imageName;
+                file_put_contents($destinationPath, $image);
+                if($request->avatar != 'default-avatar.png'){
+                    $oldImage = public_path('/images/'.$request->avatar);
+                    if(file_exists($oldImage)){
+                        unlink($oldImage);
+                    }
+                }
+            } else {
+                $imageName = $request->avatar;
+            }
             $user->update([
                 'username' => $request->username,
-                // 'avatar' => $request->avatar,
+                'avatar' => $imageName,
                 'email' => $request->email,
                 'current_job' => $request->current_job,
                 'phone' => $request->phone,
