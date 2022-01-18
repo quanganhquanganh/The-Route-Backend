@@ -5,12 +5,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
 
     public function __construct() {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+    public function createUniqueUsername($name) {
+        $username = Str::slug($name);
+        $user = User::where('username', $username)->first();
+        if($user) {
+            $username = $username . '_' . rand(1, 100);
+            return $this->createUniqueUsername($name);
+        }
+        return $username;
     }
 
     //login
@@ -46,10 +57,11 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
+        $user = User::create([
+            'name' => $request->name,
+            'password' => bcrypt($request->password),
+            'username' => $this->createUniqueUsername($request->name)
+        ]);
 
         $token = Auth::attempt($validator->validated());
 
