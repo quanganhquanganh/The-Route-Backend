@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +27,7 @@ class AuthController extends Controller
         if (! $token = Auth::attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $user = $validator->validated();
+        $user = Auth::user();
         return response()->json([
             'message' => 'User successfully login',
             'token' => $this->createNewToken($token),
@@ -46,18 +46,67 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = User::create(array_merge(
+        User::create(array_merge(
                     $validator->validated(),
                     ['password' => bcrypt($request->password)]
                 ));
-
         $token = Auth::attempt($validator->validated());
+        $user = Auth::user();
 
         return response()->json([
             'message' => 'User successfully registered',
             'token' => $this->createNewToken($token),
             'user' => $user,
         ], 201);
+    }
+    //getUser
+    public function getUser() {
+        $user = Auth::user();
+        return response()->json([
+            'status' => 'success',
+            'error' => false,
+            'message' => 'Get user successfully',
+            'user' => $user
+        ], 201);
+    }
+
+    public function updateUser(Request $request) {
+        $id = Auth::user()->id;
+        $user = User::find($id);
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'current_job' => 'required|string',
+            // 'avatar' => 'required|string',
+            'email' => 'required|string',
+            'phone' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrors($validator->errors());
+        }
+
+        try {
+            $user->update([
+                'username' => $request->username,
+                // 'avatar' => $request->avatar,
+                'email' => $request->email,
+                'current_job' => $request->current_job,
+                'phone' => $request->phone,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'error' => false,
+                'message' => 'User updated successfully',
+                'user' => $user,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 
     //logout

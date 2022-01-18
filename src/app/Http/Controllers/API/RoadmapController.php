@@ -142,7 +142,7 @@ class RoadmapController extends Controller
         $roadmap->follows_count = $roadmap->followers()->count();
         //Get milestones sorted by start date
         $milestones = $roadmap->milestones()->orderBy('start_date', 'asc')->get();
-        
+
         $user = Auth::user();
         if($user) {
             if($user->id == $roadmap->user_id){
@@ -190,7 +190,7 @@ class RoadmapController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:30|min:3',
+                'name' => 'required|string|max:1000|min:3',
                 'description' => 'required|string|max:255',
                 'image' => 'base64image',
             ]);
@@ -252,7 +252,7 @@ class RoadmapController extends Controller
     {
         $authUser = Auth::user();
         //Check if no user is logged in
-        if(!$user){
+        if(!$authUser){
             return response()->json([
                 'status' => 'error',
                 'error' => true,
@@ -483,5 +483,19 @@ class RoadmapController extends Controller
             $slug = $slug.'-'.$count;
         }
         return $slug;
+    }
+
+    public function progress(){
+        $user_id = Auth::user()->id;
+        $response = Roadmap::select('name', 'current', 'id')
+                            ->where('user_id', '=', $user_id)
+                            ->get();
+        $milestones = null;
+        foreach($response as $item){
+            $id = $item->id;
+            $milestones = Milestone::select('id')->where('roadmap_id', '=', $id)->get();
+            $item->totalMilestone = count($milestones)-1;
+        }
+        return $response;
     }
 }
