@@ -112,6 +112,7 @@ class RoadmapController extends Controller
                 'description' => $request->description,
                 'slug' => createUniqueSlug($request->name),
                 'image' => $imageName,
+                'current' => 0,
                 'user_id' => Auth::user()->id,
             ]);
 
