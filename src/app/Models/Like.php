@@ -15,13 +15,13 @@ class Like extends Model
     ];
 
     protected $table = 'likes';
-    // public function users()
-    // {
-    //     return $this->belongsTo(User::class, 'user_id');
-    // }
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-    // public function roadmaps()
-    // {
-    //     return $this->belongsTo(Roadmap::class, 'roadmap_id');
-    // }
+    public function roadmaps()
+    {
+        return $this->belongsTo(Roadmap::class, 'roadmap_id');
+    }
 }
