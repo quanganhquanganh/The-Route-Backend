@@ -96,8 +96,8 @@ class RoadmapController extends Controller
     {
         //
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:30|min:1',
-            'description' => 'required|string|max:255',
+            'name' => 'required|string|max:100|min:1',
+            'description' => 'required|string|max:500',
             'image' => 'base64image',
         ]);
 

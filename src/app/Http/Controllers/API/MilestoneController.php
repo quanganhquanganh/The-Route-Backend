@@ -48,7 +48,7 @@ class MilestoneController extends Controller
         $user = Auth::user();
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|min:3',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string|max:500',
             'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
             'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
             'type' => 'required|string|in:date,month,year',
@@ -96,7 +96,7 @@ class MilestoneController extends Controller
     {
         //
         $user = Auth::user();
-        
+
         $milestone = $user->milestones()->find($id);
 
         if(!$milestone){
@@ -108,7 +108,7 @@ class MilestoneController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:100|min:1',
-                'description' => 'required|string|max:255',
+                'description' => 'required|string|max:500',
                 'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
                 'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
                 'type' => 'required|string|in:date,month,year',
@@ -117,7 +117,7 @@ class MilestoneController extends Controller
             if($validator->fails()){
                 return $this->validationErrors($validator->errors());
             }
-            
+
             try{
                 $milestone->update([
                     'name' => $request->name,
