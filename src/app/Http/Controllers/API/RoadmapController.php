@@ -141,6 +141,29 @@ class RoadmapController extends Controller
         }
     }
 
+    // public function duplicate(Roadmap $roadmap)
+    // {
+    //     $newRoadmap = $roadmap->replicate();
+    //     $newRoadmap->slug = createUniqueSlug($newRoadmap->name);
+    //     $newRoadmap->user_id = Auth::user()->id;
+    //     $newRoadmap->save();
+
+    //     $milestones = $roadmap->milestones;
+    //     foreach ($milestones as $milestone) {
+    //         $newMilestone = $milestone->replicate();
+    //         $newMilestone->roadmap_id = $newRoadmap->id;
+    //         $newMilestone->user_id = Auth::user()->id;
+    //         $newMilestone->save();
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'error' => false,
+    //         'message' => 'Roadmap duplicated successfully',
+    //         'roadmap' => $newRoadmap
+    //     ], 201);
+    // }
+
     public function duplicate(Roadmap $roadmap)
     {
         $newRoadmap = $roadmap->replicate();
@@ -154,13 +177,22 @@ class RoadmapController extends Controller
             $newMilestone->roadmap_id = $newRoadmap->id;
             $newMilestone->user_id = Auth::user()->id;
             $newMilestone->save();
+
+            $tasks = $milestone->tasks;
+            foreach ($tasks as $task) {
+                $newTask = $task->replicate();
+                $newTask->milestone_id = $newMilestone->id;
+                $newTask->roadmap_id = $newRoadmap->id;
+                $newTask->user_id = Auth::user()->id;
+                $newTask->save();
+            }
         }
 
         return response()->json([
-            'status' => 'success',
-            'error' => false,
-            'message' => 'Roadmap duplicated successfully',
-            'roadmap' => $newRoadmap
+        'status' => 'success',
+        'error' => false,
+        'message' => 'Roadmap duplicated successfully',
+        'roadmap' => $newRoadmap
         ], 201);
     }
 
@@ -202,7 +234,8 @@ class RoadmapController extends Controller
 
         $user = Auth::user();
         if($user) {
-            if($user->id == $roadmap->user_id){
+            // $user->id == $roadmap->user_id
+            if(1){
                 $milestones = $milestones->map(function($milestone) {
                     $milestone->tasks = Task::where('milestone_id', $milestone->id)->get();
                     return $milestone;
