@@ -249,7 +249,7 @@ class RoadmapController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:1000|min:3',
-                'description' => 'required|string|max:255',
+                'description' => 'required|string|max:1000',
                 'image' => 'base64image',
             ]);
 
@@ -280,7 +280,7 @@ class RoadmapController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'image' => $imageName,
-                    'current' => $request->current? $request->current : $roadmap->current,
+                    'current' => $request->has('current') ? $request->current : $roadmap->current,
                     'slug' => ($roadmap->name == $request->name) ? $roadmap->slug : createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
