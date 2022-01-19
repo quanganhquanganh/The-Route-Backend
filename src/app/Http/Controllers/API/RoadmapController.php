@@ -280,7 +280,7 @@ class RoadmapController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'image' => $imageName,
-                    'current' => $request->current,
+                    'current' => $request->current? $request->current : $roadmap->current,
                     'slug' => ($roadmap->name == $request->name) ? $roadmap->slug : createUniqueSlug($request->name, $roadmap->id),
                 ]);
 
