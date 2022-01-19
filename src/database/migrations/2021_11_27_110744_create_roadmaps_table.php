@@ -17,7 +17,7 @@ class CreateRoadmapsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('description');
+            $table->longText('description')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('likes_count')->default(0);

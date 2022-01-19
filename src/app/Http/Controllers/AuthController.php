@@ -113,7 +113,7 @@ class AuthController extends Controller
                     }
                 }
             } else {
-                $imageName = $request->avatar;
+                $imageName = $user->avatar;
             }
             $user->update([
                 'username' => $request->username,
