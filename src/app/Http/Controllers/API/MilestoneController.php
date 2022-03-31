@@ -107,11 +107,11 @@ class MilestoneController extends Controller
             ], 404);
         } else {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:100|min:1',
-                'description' => 'required|string|max:500',
-                'start_date' => 'required|date|date_format:Y-m-d|beforeOrEqual:end_date',
-                'end_date' => 'required|date|date_format:Y-m-d|afterOrEqual:start_date',
-                'type' => 'required|string|in:date,month,year',
+                'name' => 'string|max:100|min:1',
+                'description' => 'string|max:500',
+                'start_date' => 'date|date_format:Y-m-d|beforeOrEqual:end_date',
+                'end_date' => 'date|date_format:Y-m-d|afterOrEqual:start_date',
+                'type' => 'string|in:date,month,year',
             ]);
 
             if($validator->fails()){
@@ -120,11 +120,11 @@ class MilestoneController extends Controller
 
             try{
                 $milestone->update([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'type' => $request->type
+                    'name' => $request->name ?? $milestone->name,
+                    'description' => $request->description ?? $milestone->description,
+                    'start_date' => $request->start_date ?? $milestone->start_date,
+                    'end_date' => $request->end_date ?? $milestone->end_date,
+                    'type' => $request->type ?? $milestone->type
                 ]);
                 return response()->json([
                     'status' => 'success',

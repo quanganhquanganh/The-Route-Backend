@@ -49,7 +49,7 @@ class RoadmapController extends Controller
         $roadmaps = $roadmaps->map(function ($roadmap) {
             $roadmap->likes_count = $roadmap->likes()->count();
             $roadmap->follows_count = $roadmap->follows()->count();
-            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->status = $roadmap->user_id == Auth::id() ? 'normal' : 'view-only';
             $roadmap->liked = $roadmap->likes->contains(Auth::id());
             $roadmap->user;
             return $roadmap;
@@ -71,7 +71,7 @@ class RoadmapController extends Controller
         $roadmaps = $roadmaps->map(function ($roadmap) {
             $roadmap->likes_count = $roadmap->likes()->count();
             $roadmap->follows_count = $roadmap->follows()->count();
-            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->status = $roadmap->user_id == Auth::id() ? 'normal' : 'view-only';
             $roadmap->user;
             $roadmap->liked = $roadmap->likes->contains(Auth::id());
             return $roadmap;
@@ -534,7 +534,7 @@ class RoadmapController extends Controller
         $likedRoadmaps = $likedRoadmaps->map(function($roadmap){
             $roadmap->likes_count = $roadmap->likes()->count();
             $roadmap->follows_count = $roadmap->follows()->count();
-            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->status = $roadmap->user_id == Auth::id() ? 'normal' : 'view-only';
             $roadmap->liked = $roadmap->likes->contains(Auth::id());
             return $roadmap;
         });
@@ -553,7 +553,7 @@ class RoadmapController extends Controller
         $followedRoadmaps = $followedRoadmaps->map(function($roadmap){
             $roadmap->likes_count = $roadmap->likes()->count();
             $roadmap->follows_count = $roadmap->follows()->count();
-            $roadmap->is_roadmap_owner = $roadmap->user_id == Auth::id();
+            $roadmap->status = $roadmap->user_id == Auth::id() ? 'normal' : 'view-only';
             return $roadmap;
         });
         return response()->json([
