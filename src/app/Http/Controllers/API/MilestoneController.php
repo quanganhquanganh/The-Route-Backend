@@ -4,10 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Roadmap;
 use App\Models\Milestone;
 use Exception;
-use Facade\FlareClient\Http\Exception\NotFound;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +21,7 @@ class MilestoneController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user)
+    public function index(Auth $user)
     {
         $milestones = $user->milestones;
         return response()->json(
@@ -44,7 +42,6 @@ class MilestoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $user = Auth::user();
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|min:3',
@@ -97,7 +94,7 @@ class MilestoneController extends Controller
         //
         $user = Auth::user();
 
-        $milestone = $user->milestones()->find($id);
+        $milestone = $user->milestones->find($id);
 
         if(!$milestone){
             return response()->json([
@@ -153,7 +150,7 @@ class MilestoneController extends Controller
     {
         //
         $user = Auth::user();
-        $milestone = $user->milestones()->find($id);
+        $milestone = $user->milestones->find($id);
         if(!$milestone){
             return response()->json([
                 'status' => 'error',
