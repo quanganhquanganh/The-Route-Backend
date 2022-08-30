@@ -1,3 +1,5 @@
+# Frontend Codebase
+Click [here](https://github.com/NBTrong/The-Route-Front-End-Typescript)
 # Backend Docker for The Router Project
 
 Docker clean Laravel 8 installation with PostgreSQL, Redis and nginx
